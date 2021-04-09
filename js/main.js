@@ -34,19 +34,27 @@ const char_class = [
 ]
 
 function main() {
-    console.log("in main");
     canvas  = $("#display");
     predict = $("#predict");
     f_sel   = $("#file-selector");
     out     = $("#out");
+
+    $('#predict').attr('disabled', true);
+    $('#predict').text('Upload an Image');
+
     
     let load = async () => {
         await tf.ready();
         console.log("backend:", tf.getBackend());
         model = await tf.loadLayersModel('js/js_model/model.json');
-        console.log(model);
     }
     load();
+
+    f_sel.change( () => {
+        $('#predict').attr('disabled', false);
+        $('#predict').text('Transcribe');
+        $('#table-results-1')[0].innerHTML = "";
+    });
 
     predict.click( () => {
         // disable button
@@ -98,7 +106,7 @@ function arrToChars(arr) {
         $('#table-results-1').append(`<tr><th scope="row">${char_class[i]}</th><td>${PERCENT(arr[i])}%</td><td>${PERCENT(arr[i])}%</td></tr>`)
     }
     s += `Best guess: ${best_char} @ ${PERCENT(best_val)}%`;
-    $('#table-results-1').append(`<tr class='best'><th scope="row">${char_class[i]}</th><td>${PERCENT(arr[i])}%</td></tr>`)
+    $('#table-results-1').append(`<tr class='best'><th scope="row">${best_char}</th><td>${PERCENT(best_val)}%</td></tr>`)
 
     return s;
 }
