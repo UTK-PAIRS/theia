@@ -1,18 +1,120 @@
 <html>
     <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+        <title>Theia</title>
+
         <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.3.0/dist/tf.min.js"></script>
         <script
 			  src="https://code.jquery.com/jquery-3.6.0.slim.min.js"
 			  integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI="
 			  crossorigin="anonymous"></script>
         <script src="js/main.js"></script>
+
+        <style>
+            #table-results-1 {
+                font-size: 9pt
+            }
+
+            .table th, .table td {
+                padding: .25rem !important
+            }
+        </style>
     </head>
     <body onload="main()">
-        <canvas width="512" height="512" id="display"></canvas>
-        <textarea readonly id="out" style="width: 512px; height: 512px; resize: none;"></textarea>
-        <br>
-        <input type="file" id="file-selector">
-        <button id="predict">predict</button>
-        <br>
+        <nav class="navbar navbar-dark bg-dark">
+            <a class="navbar-brand" href="#">Theia</a>
+        </nav>
+
+        <div class="container" style='width: 70%;'>
+            <div class="row" style="margin-top: 15px;">
+                <div style="margin: 0 auto;"><strong><em>Theia</em></strong> is a web resource that allows researchers to upload 70x70 images of ancient Greek characters for transcription. Begin by browsing for a file to upload and select the models that you wish to use for prediction for this image. Theia will produce a report of probabilities for predicted character labels after prediction has completed.</div>
+            </div>
+
+            <hr/>
+
+            <div class="row">
+                <div class="input-group mb-3" style="margin: 0 auto; width: 300px !important;">
+                    <div class="custom-file">
+                        <input type="file" class="custom-file-input" id="file-selector">
+                        <label class="custom-file-label" for="file-selector">Choose file</label>
+                    </div>
+                </div>                    
+            </div>
+
+            <div class="row" style="margin: 0 auto;">
+                <div class="row w-50 mx-auto">
+                    <div class="col">
+                        <div><strong>Model 1</strong></div>
+                        <div class="dropdown">
+                            <select class="browser-default custom-select">
+                                <option selected>Select a Model</option>
+                                <option value="1">ResNet</option>
+                                </select>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div><strong>Model 2</div>
+                        <div class="dropdown">
+                            <select class="browser-default custom-select">
+                                <option selected>Select a Model</option>
+                                <option value="1">ResNet</option>
+                                </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row" style="margin-top: 15px">
+                <div style="margin: 0 auto;">
+                    <button id="predict" type="button" class="btn btn-primary">Generate Predictions</button>
+                </div>
+            </div>
+
+            <hr/>
+                <!-- Image Container -->
+                <div id="results-container" class="row" style="display: none;">
+                    <div class="col">
+                    <div class="w-50 mx-auto">
+                        <div style="text-align: center;">
+                            <strong>Analyzed Image:</strong> <br/>
+                            <canvas width="70" height="70" id="display" style="border: 1px solid black;"></canvas>
+                        </div>
+                    </div>
+                    </div>
+                    <div class="col">
+                    <table class="table" style="width: 200px;">
+                        <thead>
+                        <tr>
+                            <th scope="col">Letter</th>
+                            <th scope="col">M1</th>
+                            <th scope="col">M2</th>
+                        </tr>
+                        </thead>
+                        <tbody id="table-results-1">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+    <script>
+        /* show file value after file select */
+        document.querySelector('.custom-file-input').addEventListener('change',function(e){
+            var fileName = document.getElementById("file-selector").files[0].name;
+            var nextSibling = e.target.nextElementSibling
+            nextSibling.innerText = fileName
+        });
+    </script>
     </body>
 </html>

@@ -49,12 +49,22 @@ function main() {
     load();
 
     predict.click( () => {
-        url = URL.createObjectURL(f_sel.prop('files')[0]);
-        getImageFromURL(url).then((res) => {
-            console.log(res);
-            canvas[0].getContext('2d').drawImage(res, 0, 0, width=512, height=512);
-            classify(res);
-        })
+        // disable button
+        $('#predict').attr('disabled', true);
+        $('#predict').text('Loading ...');
+
+
+        setTimeout(function(){
+            url = URL.createObjectURL(f_sel.prop('files')[0]);
+            getImageFromURL(url).then((res) => {
+                console.log(res);
+                canvas[0].getContext('2d').drawImage(res, 0, 0, width=70, height=70);
+                $('#results-container').show();
+                classify(res);
+
+                $('#predict').text('Done!');
+            });
+        }, 200);
     });
 }
 
@@ -85,8 +95,10 @@ function arrToChars(arr) {
             best_val = arr[i];
         }
         s += `${char_class[i]}: ${PERCENT(arr[i])}%\n`;
+        $('#table-results-1').append(`<tr><th scope="row">${char_class[i]}</th><td>${PERCENT(arr[i])}%</td><td>${PERCENT(arr[i])}%</td></tr>`)
     }
     s += `Best guess: ${best_char} @ ${PERCENT(best_val)}%`;
+    $('#table-results-1').append(`<tr class='best'><th scope="row">${char_class[i]}</th><td>${PERCENT(arr[i])}%</td></tr>`)
 
     return s;
 }
