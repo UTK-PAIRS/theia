@@ -1,0 +1,18 @@
+<html>
+    <head>
+        <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.3.0/dist/tf.min.js"></script>
+        <script
+			  src="https://code.jquery.com/jquery-3.6.0.slim.min.js"
+			  integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI="
+			  crossorigin="anonymous"></script>
+        <script src="js/main.js"></script>
+    </head>
+    <body onload="main()">
+        <canvas width="512" height="512" id="display"></canvas>
+        <textarea readonly id="out" style="width: 512px; height: 512px; resize: none;"></textarea>
+        <br>
+        <input type="file" id="file-selector">
+        <button id="predict">predict</button>
+        <br>
+    </body>
+</html>
