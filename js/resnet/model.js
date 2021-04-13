@@ -1,0 +1,13 @@
+async function resnet_exc(img, tensor=undefined) {
+    if (tensor === undefined) {
+        tensor = await tf.browser.fromPixels(img).reshape([1, 70, 70, 3]);
+    }
+    let model = await tf.loadLayersModel('js/resnet/model.json');
+
+    let res = model.predict(tensor);
+
+    return new Promise (
+        resolve => {res.data().then(ret => {resolve(ret);});}
+    );
+}
+
