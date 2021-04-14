@@ -7,7 +7,9 @@ var out         = null;
 var mod_options = null;
 
 // eligible models
-var models  = {};
+var models      = {};
+// selected models
+var smod        = {};
 
 // should work in jquery -- doesn't when testing locally?
 // https://stackoverflow.com/questions/16839698/jquery-getscript-alternative-in-native-javascript
@@ -22,6 +24,18 @@ function getScript(source) {
     return script;
 }
 
+function update_tbutton() {
+    for (const e in smod) {
+        if (smod[e] == true) {
+            $('#predict').attr('disabled', false);
+            $('#predict').text('Transcribe');
+            return;
+        }
+    }
+    $('#predict').attr('disabled', true);
+    $('#predict').text('Select Model');
+}
+
 // load all models in MODEL_DIRS
 async function load_models() {
     const load_model = async model => {
@@ -30,6 +44,7 @@ async function load_models() {
                     try {
                         models[model] = {"exc": eval(`${model}_exc`)};
                         add_model(model);
+                        smod[model] = 0;
                         console.log(`${model} loaded`);
                         resolve(0);
                     } catch (ReferenceError) {
@@ -72,9 +87,16 @@ function main() {
 
         $(".m_sel").change(async () => {
             await tf.ready();
-            $('#predict').attr('disabled', false);
-            $('#predict').text('Transcribe');
-            console.log("changed");
+            await Promise.all($('.m_sel').map(elm => {
+                return new Promise(
+                    resolve => {
+                        let e = $('.m_sel')[elm];
+                        smod[e.value] = e.checked;
+                        resolve(0);
+                    }
+                )
+            }))
+            update_tbutton();
         });
 
         $('#predict').text('Upload image');
@@ -84,9 +106,7 @@ function main() {
 
     f_sel.change( async () => {
         await tf.ready();
-        $('#predict').attr('disabled', false);
-        $('#predict').text('Transcribe');
-        $('#table-results-1')[0].innerHTML = "";
+        update_tbutton();
     });
 
 
@@ -100,15 +120,30 @@ function main() {
         url = URL.createObjectURL(f_sel.prop('files')[0]);
         getImageFromURL(url).then((res) => {
             canvas[0].getContext('2d').drawImage(res, 0, 0, width=70, height=70);
+
+            let tensor = -1;
+            try {
+                tensor = tf.browser.fromPixels(res).reshape([1, 70, 70, 3]);
+            } catch (e) {
+                $('#predict').text('Image must be 70x70!');
+                return;
+            }
+
             $('#results-container').show();
             Promise.all($('.m_sel').map(
                 async elm => {
                     let e = $('.m_sel')[elm];
-                    let tensor = await tf.browser.fromPixels(res).reshape([1, 70, 70, 3]);
+
                     if (e.checked) {
                         console.log(`getting results for ${e.value}`);
-
-                        let r = Array.from(await eval(`${e.value}_exc(res, tensor)`));
+                        let r = undefined;
+                        try {
+                            const t = await tensor;
+                            r = Array.from(await eval(`${e.value}_exc(res, t)`));
+                        } catch (e) {
+                            console.error(e);
+                            return undefined;
+                        }
                         r.unshift(e.value)
                         return r;
                     }
@@ -135,9 +170,8 @@ async function getImageFromURL(src) {
 
 function genResultTable(arr) {
     $('#table-results-1')[0].innerHTML = "";
-    console.log(arr);
     const genArr = e => {
-        let best_val = -1;
+        let best_val = 0.0;
         let best_char = "N/A";
         let r = [];
 
@@ -146,6 +180,8 @@ function genResultTable(arr) {
             if (e[i] > best_val) {
                 best_char = CHAR_CLASS[i - 1];
                 best_val = e[i];
+            } else if (best_val != 0.0 && e[i] == best_val) {
+                best_char += ", " + CHAR_CLASS[i - 1];
             }
             r.push(`${PERCENT(e[i])}%\n`);
         }

@@ -1,4 +1,5 @@
 async function resnet_exc(img, tensor=undefined) {
+    if (tensor == -1) throw new Error("Must be 70x70!");
     if (tensor === undefined) {
         tensor = await tf.browser.fromPixels(img).reshape([1, 70, 70, 3]);
     }
