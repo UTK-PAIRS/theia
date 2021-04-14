@@ -9,39 +9,6 @@ var mod_options = null;
 // eligible models
 var models  = {};
 
-const PERCENT = x => Math.round(x * 100000, 6) / 1000;
-
-const CHAR_CLASS = [
-    "Alpha",
-    "Beta",
-    "Chi",
-    "Delta",
-    "Epsilon",
-    "Eta",
-    "Gamma",
-    "Iota",
-    "Kappa",
-    "Lambda",
-    "Mu" ,
-    "Nu" ,
-    "Omega" ,
-    "Omicron" ,
-    "Phi" ,
-    "Pi" ,
-    "Psi" ,
-    "Rho" ,
-    "Sigma" , 
-    "Tau" ,
-    "Theta" ,
-    "Upsilon" ,
-    "Xi",
-    "Zeta",
-]
-
-const ROW_HEADER = [...CHAR_CLASS, "Best"]
-
-const MODEL_DIRS = ["cnn", "resnet"];
-
 // should work in jquery -- doesn't when testing locally?
 // https://stackoverflow.com/questions/16839698/jquery-getscript-alternative-in-native-javascript
 function getScript(source) {
